@@ -1,0 +1,90 @@
+library(cowplot)
+library(dplyr)
+library(expss)
+ibrary(janitor)
+library(patchwork)
+library(ggplot2)
+library(sf)
+library(stringr)
+library(tidyverse)
+
+
+getwd()
+#/Users/rashisingh/AI Adoption in Education
+
+
+# Importing the data 
+read.csv("data_school.csv")
+data <- read.csv("data_school.csv")
+View(data)
+
+# Removing time stamp
+data <- data %>% select(-Timestamp)
+View(data)
+
+# Count AGE 
+table(data$Q2, useNA = "no")
+
+Q2age <- data %>%
+    filter(!is.na(Q2)) %>%
+    count(Q2) %>%
+    mutate(
+        percentage = round(n / sum(n) * 100, 1)
+    )
+Q2age
+
+# Plotting 
+Q2age %>%
+    ggplot(aes(x = factor(Q2), y = percentage)) +
+    geom_col(fill = "#4C72B0", width = 0.6) +
+    geom_text(
+        aes(label = paste0(percentage, "%")),
+        vjust = -0.4,
+        size = 3.5
+    ) +
+    labs(
+        title = "Age Distribution of Respondents",
+        x = "Age",
+        y = "Percentage"
+    ) +
+    theme_minimal()
+
+# CLEANING SCHOOL 
+
+table(data$Q5)
+
+data <- data %>%
+    mutate(
+        Q5_clean = Q5 %>%
+            str_trim() %>%
+            str_to_upper(),
+        Q5_clean = na_if(Q5_clean, "")
+    )
+
+table(data$Q5_clean)
+
+# Removing SPDAV - as it was already coded as SRDAV
+
+data <- data %>%
+  filter(Q5_clean != "SPDAV")
+
+table(data$Q5_clean)
+
+# Removing both SPDAV AND DPSS
+data %>%
+  filter(!Q5_clean %in% c("SPDAV", "DPSS")) %>%
+  count(Q5_clean, sort = TRUE)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
