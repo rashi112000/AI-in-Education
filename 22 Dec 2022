@@ -64,16 +64,21 @@ data <- data %>%
 table(data$Q5_clean)
 
 # Removing SPDAV - as it was already coded as SRDAV
+# Removing DPSS
 
 data <- data %>%
   filter(Q5_clean != "SPDAV")
 
+data <- data %>%
+    filter(Q5_clean != "DPSS")
+
 table(data$Q5_clean)
 
-# Removing both SPDAV AND DPSS
+# CHECKING total count 
 data %>%
-  filter(!Q5_clean %in% c("SPDAV", "DPSS")) %>%
-  count(Q5_clean, sort = TRUE)
+  count(Q5_clean) %>%
+  summarise(total_n = sum(n))
+
 
 
 
