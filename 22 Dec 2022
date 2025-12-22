@@ -22,7 +22,7 @@ View(data)
 data <- data %>% select(-Timestamp)
 View(data)
 
-# Count AGE 
+# Q2: Count AGE 
 table(data$Q2, useNA = "no")
 
 Q2age <- data %>%
@@ -49,7 +49,7 @@ Q2age %>%
     ) +
     theme_minimal()
 
-# CLEANING SCHOOL 
+# Q3: CLEANING SCHOOL 
 
 table(data$Q5)
 
@@ -79,6 +79,34 @@ data %>%
   count(Q5_clean) %>%
   summarise(total_n = sum(n))
 
+# Q7: Percentages of Academic Stream 
+
+data %>%
+    filter(!is.na(Q7)) %>%
+    count(Q7) %>%
+    mutate(percentage = round(n / sum(n) * 100, 1))
+
+# Q9: AI use percentage 
+
+data %>%
+    filter(!is.na(Q9)) %>%
+    count(Q9) %>%
+    mutate(percentage = round(n / sum(n) * 100, 1))
+
+
+# Q14: Which AI tool used the most
+
+data %>%
+    filter(!is.na(Q14)) %>%
+    count(Q14) %>%
+    mutate(percentage = round(n / sum(n) * 100, 1))
+
+# Q33: Time spent on smartphone daily 
+
+data %>%
+    filter(!is.na(Q33)) %>%
+    count(Q33) %>%
+    mutate(percentage = round(n / sum(n) * 100, 1))
 
 
 
