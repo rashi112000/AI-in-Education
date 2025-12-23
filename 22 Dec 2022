@@ -1,7 +1,7 @@
 library(cowplot)
 library(dplyr)
 library(expss)
-ibrary(janitor)
+library(janitor)
 library(patchwork)
 library(ggplot2)
 library(sf)
