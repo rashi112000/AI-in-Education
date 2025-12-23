@@ -26,32 +26,8 @@ View(data)
 "No" %in% data$Q1
 sum(grepl("No", data$Q1, ignore.case = TRUE), na.rm = TRUE)
 
-# Q2: Count AGE 
-table(data$Q2, useNA = "no")
-
-Q2age <- data %>%
-    filter(!is.na(Q2)) %>%
-    count(Q2) %>%
-    mutate(
-        percentage = round(n / sum(n) * 100, 1)
-    )
-Q2age
-
-# Plotting 
-Q2age %>%
-    ggplot(aes(x = factor(Q2), y = percentage)) +
-    geom_col(fill = "#4C72B0", width = 0.6) +
-    geom_text(
-        aes(label = paste0(percentage, "%")),
-        vjust = -0.4,
-        size = 3.5
-    ) +
-    labs(
-        title = "Age Distribution of Respondents",
-        x = "Age",
-        y = "Percentage"
-    ) +
-    theme_minimal()
+data <- data %>%
+  filter(!grepl("^no$", Q1, ignore.case = TRUE))
 
 # Q3: CLEANING SCHOOL 
 
@@ -83,6 +59,34 @@ data %>%
   count(Q5_clean) %>%
   summarise(total_n = sum(n))
 
+# Q2: Count AGE 
+table(data$Q2, useNA = "no")
+
+Q2age <- data %>%
+    filter(!is.na(Q2)) %>%
+    count(Q2) %>%
+    mutate(
+        percentage = round(n / sum(n) * 100, 1)
+    )
+Q2age
+
+# Plotting 
+Q2age %>%
+    ggplot(aes(x = factor(Q2), y = percentage)) +
+    geom_col(fill = "#4C72B0", width = 0.6) +
+    geom_text(
+        aes(label = paste0(percentage, "%")),
+        vjust = -0.4,
+        size = 3.5
+    ) +
+    labs(
+        title = "Age Distribution of Respondents",
+        x = "Age",
+        y = "Percentage"
+    ) +
+    theme_minimal()
+
+
 # Q7: Percentages of Academic Stream 
 
 data %>%
@@ -111,6 +115,7 @@ data %>%
     filter(!is.na(Q33)) %>%
     count(Q33) %>%
     mutate(percentage = round(n / sum(n) * 100, 1))
+
 
 
 
