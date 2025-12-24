@@ -73,4 +73,13 @@ Q2age
 
 "" %in% data$Q7
 
+### library(expss)
+var_lab(data$Q7) <- "Academic Stream in Higher Secondary Education"
+fre(data$Q7)
+
+
+
+
+
+
 
