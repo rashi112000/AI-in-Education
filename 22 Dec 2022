@@ -258,14 +258,14 @@ print(doc, target = "AI_Use_by_Subject.docx")
 
 
 
-
+# FINAL CODE FOR TEXT
 # data %>%
   filter(!is.na(Q7), Q7 != "") %>%
   count(Q7) %>%
   mutate(percentage = round(n / sum(n) * 100, 1))
 
 
-# FINAL CODE 
+
 
 
 
