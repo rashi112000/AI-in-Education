@@ -1,0 +1,76 @@
+library(cowplot)
+library(dplyr)
+library(expss)
+library(janitor)
+library(patchwork)
+library(ggplot2)
+library(sf)
+library(stringr)
+library(tidyverse)
+
+
+getwd()
+#/Users/rashisingh/AI Adoption in Education
+
+
+# Importing the data 
+read.csv("data_school.csv")
+data <- read.csv("data_school.csv")
+View(data)
+
+# Removing time stamp
+data <- data %>% select(-Timestamp)
+View(data)
+
+# Checking who all have said No to participate in the study 
+"No" %in% data$Q1
+sum(grepl("No", data$Q1, ignore.case = TRUE), na.rm = TRUE)
+
+data <- data %>%
+  filter(!grepl("^no$", Q1, ignore.case = TRUE))
+
+# Q3: CLEANING SCHOOL 
+
+table(data$Q5)
+
+data <- data %>%
+    mutate(
+        Q5_clean = Q5 %>%
+            str_trim() %>%
+            str_to_upper(),
+        Q5_clean = na_if(Q5_clean, "")
+    )
+
+table(data$Q5_clean)
+
+# Removing SPDAV - as it was already coded as SRDAV
+# Removing DPSS
+
+data <- data %>%
+  filter(Q5_clean != "SPDAV")
+
+data <- data %>%
+    filter(Q5_clean != "DPSS")
+
+table(data$Q5_clean)
+
+# CHECKING total count 
+data %>%
+  count(Q5_clean) %>%
+  summarise(total_n = sum(n))
+
+# Q2: Count AGE 
+table(data$Q2, useNA = "no")
+
+Q2age <- data %>%
+    filter(!is.na(Q2)) %>%
+    count(Q2) %>%
+    mutate(
+        percentage = round(n / sum(n) * 100, 1)
+    )
+Q2age
+
+
+"" %in% data$Q7
+
+
