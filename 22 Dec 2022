@@ -176,6 +176,88 @@ table2 <- crosstab_q7_q14 %>%
 table2
 
 
+# Q16
+data %>%
+    filter(!is.na(Q16)) %>%
+    count(Q16) %>%
+    mutate(percentage = round(n / sum(n) * 100, 1))
+
+
+q16_table <- data %>%
+  filter(!is.na(Q16), Q16 != "") %>%
+  count(Q16) %>%
+  mutate(percentage = round(n / sum(n) * 100, 1))
+
+q16_table
+
+# better table
+
+library(dplyr)
+
+q16_table <- data %>%
+  filter(!is.na(Q16), Q16 != "") %>%
+  count(Q16) %>%
+  mutate(
+    percentage = round(n / sum(n) * 100, 1)
+  ) %>%
+  rename(
+    `Subject where AI is used the most` = Q16,
+    `Count (N)` = n,
+    `Percentage (%)` = percentage
+  )
+
+q16_table
+
+# table saved as HTML
+
+library(dplyr)
+library(knitr)
+library(kableExtra)
+
+q16_html <- q16_table %>%
+  kable(
+    format = "html",
+    caption = "For which subject is AI used the most?",
+    align = "lcc"
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE
+  )
+
+# Save as HTML file
+save_kable(
+  q16_html,
+  file = "AI_Use_by_Subject.html"
+)
+
+
+# SAVING TABLE AS .WORD FILE 
+
+
+library(dplyr)
+library(officer)
+library(flextable)
+
+# Convert to Word-friendly table
+q16_flex <- flextable(q16_table) %>%
+  autofit()
+
+# Create Word document
+doc <- read_docx() %>%
+  body_add_par(
+    "For which subject is AI used the most?",
+    style = "heading 1"
+  ) %>%
+  body_add_flextable(q16_flex)
+
+# Save Word file
+print(doc, target = "AI_Use_by_Subject.docx")
+
+
+
+
+
 
 
 
