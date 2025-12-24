@@ -117,6 +117,68 @@ data %>%
     mutate(percentage = round(n / sum(n) * 100, 1))
 
 
+# NOW FOR REPORT
+
+# STREAM-WISE FREQUENCY 
+# Q7 X Q11
+
+data %>%
+    filter(!is.na(Q7)) %>%
+    count(Q7) %>%
+    mutate(percentage = round(n / sum(n) * 100, 1))
+
+data %>%
+    filter(!is.na(Q11)) %>%
+    count(Q11) %>%
+    mutate(percentage = round(n / sum(n) * 100, 1))
+
+# WE WANT, WIHTIN EACH STREAM, HOW OFTEN IS Q11
+
+crosstab_q7_q11 <- data %>%
+    filter(Q7 != "", Q11 != "", !is.na(Q7), !is.na(Q11)) %>%
+    count(Q7, Q11) %>%
+    mutate(row_percentage = round(n / ave(n, Q7, FUN = sum) * 100, 1))
+
+crosstab_q7_q11
+
+table1 <- crosstab_q7_q11 %>%
+    mutate(
+        value = paste0(n, " (", row_percentage, "%)")
+    ) %>%
+    select(Q7, Q11, value) %>%
+    pivot_wider(
+        names_from = Q11,
+        values_from = value
+    )
+
+table1
+
+
+# Q7 X Q14
+
+crosstab_q7_q14 <- data %>%
+    filter(Q7 != "", Q14 != "", !is.na(Q7), !is.na(Q14)) %>%
+    count(Q7, Q14) %>%
+    mutate(row_percentage = round(n / ave(n, Q7, FUN = sum) * 100, 1))
+
+crosstab_q7_q14
+
+table2 <- crosstab_q7_q14 %>%
+    mutate(
+        value = paste0(n, " (", row_percentage, "%)")
+    ) %>%
+    select(Q7, Q14, value) %>%
+    pivot_wider(
+        names_from = Q14,
+        values_from = value
+    )
+
+table2
+
+
+
+
+
 
 
 
