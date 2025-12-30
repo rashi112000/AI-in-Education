@@ -212,8 +212,60 @@ Q26_overall <- data %>%
 
 Q26_overall
 
+#Q27
 
+Q27_overall <- data %>%
+    tab_cells(Q27a, Q27b, Q27c, Q27d, Q27e) %>%
+    tab_cols(total()) %>%
+    tab_stat_cases(label = "Count") %>%
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
 
+Q27_overall
+
+#Q29
+
+Q29_overall <- data %>%
+    tab_cells(Q29a, Q29b, Q29c) %>%
+    tab_cols(total()) %>%
+    tab_stat_cases(label = "Count") %>%
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+
+Q29_overall
+
+#Q30
+
+Q30_overall <- data %>%
+    tab_cells(Q30) %>%
+    tab_cols(total()) %>%
+    tab_stat_cases(label = "Count") %>%
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+
+Q30_overall
+
+#Q31
+
+Q31_overall <- data %>%
+    tab_cells(Q31) %>%
+    tab_cols(total()) %>%
+    tab_stat_cases(label = "Count") %>%
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+
+Q31_overall
+
+#Q33
+
+Q33_overall <- data %>%
+    tab_cells(Q33) %>%
+    tab_cols(total()) %>%
+    tab_stat_cases(label = "Count") %>%
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+
+Q33_overall
 
 
 
