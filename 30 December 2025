@@ -67,6 +67,7 @@ data <- data %>%
 
 table(data$Q5_clean)
 
+#Q7
 
 Q7_overall <- data %>%
   tab_cells(Q7) %>%
@@ -76,6 +77,149 @@ Q7_overall <- data %>%
   tab_pivot()
 
 Q7_overall
+
+#Q8
+var_lab(data$Q8a) <- "Physics"
+var_lab(data$Q8b) <- "Chemistry"
+var_lab(data$Q8c) <- "Mathematics"
+var_lab(data$Q8d) <- "Biology"
+var_lab(data$Q8e) <- "Computer Science"
+var_lab(data$Q8f) <- "Information Practices / AI"
+var_lab(data$Q8g) <- "Psychology"
+var_lab(data$Q8h) <- "Physical Education"
+var_lab(data$Q8i) <- "Accountancy"
+var_lab(data$Q8j) <- "Business Studies"
+var_lab(data$Q8k) <- "Economics"
+var_lab(data$Q8l) <- "Entrepreneurship"
+var_lab(data$Q8m) <- "Legal Studies"
+var_lab(data$Q8n) <- "Political Science"
+var_lab(data$Q8o) <- "English"
+var_lab(data$Q8p) <- "History"
+var_lab(data$Q8q) <- "Sociology"
+var_lab(data$Q8r) <- "Geography"
+
+Q8_vars <- c(
+  "Q8a","Q8b","Q8c","Q8d","Q8e","Q8f","Q8g","Q8h","Q8i",
+  "Q8j","Q8k","Q8l","Q8m","Q8n","Q8o","Q8p","Q8q","Q8r"
+)
+
+Q8_overall<- data %>%
+  tab_cells(select(., all_of(Q8_vars))) %>%
+  tab_stat_cpct(total_label = "#Total cases") %>%
+  tab_pivot()
+
+Q8_overall
+
+
+#Q11
+
+Q11_overall <- data %>%
+    tab_cells(Q11) %>%
+    tab_cols(total()) %>%
+    tab_stat_cases(label = "Count") %>%
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+
+Q11_overall
+
+#Q13
+
+Q13_overall <- data %>%
+  tab_cells(Q13a, Q13b, Q13c, Q13d) %>%
+  tab_cols(total()) %>%
+  tab_stat_cases(label = "Count") %>%
+  tab_stat_cpct(label = "Percent") %>%
+  tab_pivot()
+
+Q13_overall
+
+#Q14
+
+Q14_overall <- data %>%
+    tab_cells(Q14) %>%
+    tab_cols(total()) %>%
+    tab_stat_cases(label = "Count") %>%
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+
+Q14_overall
+
+#Q15
+
+Q15_overall <- data %>%
+    tab_cells(Q15) %>%
+    tab_cols(total()) %>%
+    tab_stat_cases(label = "Count") %>%
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+
+Q15_overall
+
+# Q16
+unique(data$Q16) # Entrepreneurship doesn't exisit- was not selected, we have NA 
+sum(is.na(data$Q16))
+
+Q16_overall <- data %>%
+    tab_cells(Q16) %>%
+    tab_cols(total()) %>%
+    tab_stat_cases(label = "Count") %>%
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+
+Q16_overall
+
+#Q23
+
+Q23_overall <- data %>%
+    tab_cells(Q23) %>%
+    tab_cols(total()) %>%
+    tab_stat_cases(label = "Count") %>%
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+
+Q23_overall
+
+#Q24
+
+Q24_overall <- data %>%
+    tab_cells(Q24a, Q24b, Q24c, Q24d) %>%
+    tab_cols(total()) %>%
+    tab_stat_cases(label = "Count") %>%
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+
+Q24_overall
+
+#Q25
+
+Q25_overall <- data %>%
+    tab_cells(Q25) %>%
+    tab_cols(total()) %>%
+    tab_stat_cases(label = "Count") %>%
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+
+Q25_overall
+
+#Q26
+
+Q26_overall <- data %>%
+    tab_cells(Q26a, Q26b, Q26c) %>%
+    tab_cols(total()) %>%
+    tab_stat_cases(label = "Count") %>%
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+
+Q26_overall
+
+
+
+
+
+
+
+
+
 
 
 
