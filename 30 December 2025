@@ -13,7 +13,6 @@ library(readxl)
 library(writexl)
 library(plotly)
 library(huxtable)
-library(summarytools)
 
 getwd()
 
