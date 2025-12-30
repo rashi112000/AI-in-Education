@@ -268,6 +268,19 @@ Q33_overall <- data %>%
 Q33_overall
 
 
+# MOVING ON TO CROSS TABULATION OF Q7 X Q16
+
+Q7_Q16_crosstab <- data %>%
+    tab_cells(Q16) %>%          # rows = subjects
+    tab_cols(Q7) %>%            # columns = streams
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+
+Q7_Q16_crosstab
+
+
+
+
 
 
 
