@@ -612,3 +612,12 @@ Q25_overall
 
 
 
+# cross tab- 7 and 25
+
+Q7_Q25_crosstab_combined <- data1 %>%
+tab_cells(Q7_combined) %>%            # rows = AI use frequency
+tab_cols(Q25) %>%     # columns = combined streams
+tab_stat_cpct(label = "Percent") %>%
+tab_pivot()
+Q7_Q25_crosstab_combined
+
