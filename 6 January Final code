@@ -1,3 +1,7 @@
+# ============================================================
+# LIBRARIES
+# ============================================================
+
 library(cowplot)
 library(dplyr)
 library(expss)
@@ -13,6 +17,10 @@ library(readxl)
 library(writexl)
 library(plotly)
 library(huxtable)
+
+# ============================================================
+# DATA IMPORT & BASIC CLEANING
+# ============================================================
 
 getwd()
 
@@ -32,7 +40,6 @@ sum(grepl("No", data$Q1, ignore.case = TRUE), na.rm = TRUE)
 data <- data %>%
   filter(!grepl("^no$", Q1, ignore.case = TRUE))
 
-# Q3: CLEANING SCHOOL 
 
 table(data$Q5)
 
@@ -62,30 +69,52 @@ data %>%
   count(Q5_clean) %>%
   summarise(total_n = sum(n)) # 910
 
-
-
+# ============================================================
 # PROFILE OF RESPONDENTS
+# ============================================================
 
+# ----------------------------
 # Q3
+# ----------------------------
+
 data %>%
   tab_cells(Q3) %>%
   tab_stat_cpct(total_label = "#Total cases") %>%
   tab_pivot()
 
 
+# ----------------------------
 # Q5
+# ----------------------------
+
 data %>%
   tab_cells(Q5_clean) %>%
   tab_stat_cpct(total_label = "#Total cases") %>%
   tab_pivot()
 
+# ----------------------------
 # Q6
+# ----------------------------
+
 data %>%
   tab_cells(Q6) %>%
   tab_stat_cpct(total_label = "#Total cases") %>%
   tab_pivot()
 
-# CROSS TAB OF Q6 X Q27e
+# ============================================================
+# CROSS TAB: Q6 × Q27e
+# ============================================================
+
+data1 <- data %>%
+  mutate(
+    Q7_combined = case_when(
+      Q7 %in% c(
+        "Humanities/Arts with Mathematics",
+        "Humanities/Arts without Mathematics"
+      ) ~ "Humanities / Arts",
+      TRUE ~ Q7
+    )
+  )
 
 Q6_Q27e_crosstab_combined <- data1 %>%
     tab_cells(Q6) %>%            # rows = AI use frequency
@@ -94,9 +123,10 @@ Q6_Q27e_crosstab_combined <- data1 %>%
     tab_pivot()
 Q6_Q27e_crosstab_combined
 
-
-
+# ============================================================
 # Q7
+# ============================================================
+
 
 Q7a <- data %>%
   tab_cells(Q7) %>%
@@ -118,7 +148,9 @@ data1 <- data %>%
         )
     )
 
-# Now the CROSS TAB Q7 X Q11
+# ============================================================
+# CROSS TAB: Q7 × Q11
+# ============================================================
 
 Q7_Q11_crosstab_combined <- data1 %>%
     tab_cells(Q7_combined) %>%            # rows = AI use frequency
@@ -128,7 +160,10 @@ Q7_Q11_crosstab_combined <- data1 %>%
 Q7_Q11_crosstab_combined
 
 
-# CROSS TAB Q7 X Q16
+# ============================================================
+# CROSS TAB: Q7 × Q16
+# ============================================================
+
 Q7_Q16_crosstab_combined <- data1 %>%
     tab_cells(Q7_combined) %>%            # rows = AI use frequency
     tab_cols(Q16) %>%     # columns = combined streams
@@ -136,7 +171,9 @@ Q7_Q16_crosstab_combined <- data1 %>%
     tab_pivot()
 Q7_Q16_crosstab_combined
 
-# Now the CROSS TAB Q7 X Q18a,Q18b,Q18c,Q18d
+# ============================================================
+# CROSS TAB: Q7 × QQ18a,Q18b,Q18c,Q18d
+# ============================================================
 
 data1 <- data %>%
     mutate(
@@ -157,7 +194,9 @@ Q18_vars <- c("Q18a", "Q18b", "Q18c", "Q18d")
 Q18_overall_rpct <- cro_rpct(data1$Q7_combined,data1[Q18_vars])
 Q18_overall_rpct
 
-# Now the CROSS TAB Q7 x  Q27e
+# ============================================================
+# CROSS TAB: Q7 × Q27e
+# ============================================================
 
 Q7_Q27e_crosstab_combined <- data1 %>%
     tab_cells(Q7_combined) %>%            # rows = AI use frequency
@@ -167,7 +206,9 @@ Q7_Q27e_crosstab_combined <- data1 %>%
 Q7_Q27e_crosstab_combined
 
 
+# ============================================================
 # Q8
+# ============================================================
 
 var_lab(data$Q8a) <- "Physics"
 var_lab(data$Q8b) <- "Chemistry"
@@ -200,7 +241,10 @@ q8a<- data %>%
 
 q8a
 
+# ============================================================
 # Q9
+# ============================================================
+
 Q9a <- data %>%
   tab_cells(Q9) %>%
   tab_cols(total()) %>%
@@ -210,7 +254,10 @@ Q9a <- data %>%
 Q9a
 
 
+# ============================================================
 # Q10
+# ============================================================
+
 Q10a <- data %>%
   tab_cells(Q10) %>%
   tab_cols(total()) %>%
@@ -220,7 +267,9 @@ Q10a <- data %>%
 Q10a
 
 
+# ============================================================
 # Q11
+# ============================================================
 
 Q11_overall <- data %>%
     tab_cells(Q11) %>%
@@ -231,7 +280,9 @@ Q11_overall <- data %>%
 
 Q11_overall
 
+# ============================================================
 # Q12
+# ============================================================
 
 Q12_overall <- data %>%
     tab_cells(Q12) %>%
@@ -243,7 +294,9 @@ Q12_overall <- data %>%
 Q12_overall
 
 
+# ============================================================
 # Q13
+# ============================================================
 
 Q13_overall <- data %>%
   tab_cells(Q13a, Q13b, Q13c, Q13d) %>%
@@ -254,7 +307,9 @@ Q13_overall <- data %>%
 
 Q13_overall
 
+# ============================================================
 # Q14
+# ============================================================
 
 Q14_overall <- data %>%
     tab_cells(Q14) %>%
@@ -265,7 +320,10 @@ Q14_overall <- data %>%
 
 Q14_overall
 
+# ============================================================
 # Q15
+# ============================================================
+
 Q15_overall <- data %>%
     tab_cells(Q15) %>%
     tab_cols(total()) %>%
@@ -275,7 +333,10 @@ Q15_overall <- data %>%
 
 Q15_overall
 
+# ============================================================
 # Q16
+# ============================================================
+
 unique(data$Q16) # Entrepreneurship doesn't exist- was not selected, we have NA 
 sum(is.na(data$Q16))
 
@@ -288,7 +349,9 @@ Q16_overall <- data %>%
 
 Q16_overall
 
+# ============================================================
 # Q17
+# ============================================================
 
 var_lab(data$Q17a) <- "Physics"
 var_lab(data$Q17b) <- "Chemistry"
@@ -450,10 +513,9 @@ Q17_clean_table <- data %>%
 
 Q17_clean_table
 
+# ============================================================
 # Q18
-
-
-##Q18
+# ============================================================
 
 var_lab(data$Q18a) <- "ChatGPT or other generative AI"
 var_lab(data$Q18b) <- "Language and writing support tools (e.g., Grammarly)"
@@ -469,7 +531,9 @@ q18a <- data %>%
 q18a
 
 
-# CROSS TAB Q7 X Q18
+# ============================================================
+# CROSS TAB: Q7 × Q18
+# ============================================================
 
 data1 <- data %>%
     mutate(
@@ -484,7 +548,10 @@ q18b <- cro_rpct(data1$Q7_combined, data1[q18_vars])
 q18b
 
 
+# ============================================================
 # Q19
+# ============================================================
+
 var_lab(data$Q19a) <- "Searching for academic information (definitions, dates, etc.)"
 var_lab(data$Q19b) <- "Writing assistance (homework, projects, essays, grammar correction)"
 var_lab(data$Q19c) <- "Calculations and solving numerical problems"
@@ -539,7 +606,9 @@ q19a <- data %>%
 
 q19a
 
-# Q 20
+# ============================================================
+# Q20
+# ============================================================
 
 var_lab(data$Q20a) <- "Preparation for school / board exams"
 var_lab(data$Q20b) <- "Preparation for entrance exams"
@@ -555,9 +624,9 @@ q20a <- data %>%
 
 q20a
 
-
-
-# Q 21
+# ============================================================
+# Q21
+# ============================================================
 
 var_lab(data$Q21a) <- "Generative AI tools (e.g., ChatGPT, Gemini)"
 var_lab(data$Q21b) <- "Offline / Private / Home tuition"
@@ -573,8 +642,9 @@ q21a <- data %>%
 
 q21a
 
-
-# Q 22
+# ============================================================
+# Q22
+# ============================================================
 
 var_lab(data$Q22a) <- "Generative AI tools (e.g., ChatGPT, Gemini)"
 var_lab(data$Q22b) <- "Offline / Private / Home tuition"
@@ -590,8 +660,9 @@ q22a <- data %>%
 
 q22a
 
-
+# ============================================================
 # Q23
+# ============================================================
 
 Q23_overall <- data %>%
     tab_cells(Q23) %>%
@@ -603,8 +674,9 @@ Q23_overall <- data %>%
 Q23_overall
 
 
+# ============================================================
 # Q24
-
+# ============================================================
 
 data <- data %>%
   mutate(
@@ -623,8 +695,6 @@ data <- data %>%
     )
   )
 
-#Q24
-
 Q24_overall <- data %>%
     tab_cells(Q24a_clean, Q24b, Q24c, Q24d_clean) %>%
     tab_cols(total()) %>%
@@ -634,7 +704,10 @@ Q24_overall <- data %>%
 
 Q24_overall
 
+
+# ============================================================
 # Q25
+# ============================================================
 
 Q25_overall <- data %>%
     tab_cells(Q25) %>%
@@ -645,7 +718,9 @@ Q25_overall <- data %>%
 
 Q25_overall
 
-#Q26
+# ============================================================
+# Q26
+# ============================================================
 
 Q26_overall <- data %>%
     tab_cells(Q26a, Q26b, Q26c) %>%
@@ -656,7 +731,9 @@ Q26_overall <- data %>%
 
 Q26_overall
 
-#Q27
+# ============================================================
+# Q27
+# ============================================================
 
 Q27_overall <- data %>%
     tab_cells(Q27a, Q27b, Q27c, Q27d, Q27e) %>%
@@ -667,7 +744,9 @@ Q27_overall <- data %>%
 
 Q27_overall
 
-#Q29
+# ============================================================
+# Q29
+# ============================================================
 
 Q29_overall <- data %>%
     tab_cells(Q29a, Q29b, Q29c) %>%
@@ -678,7 +757,9 @@ Q29_overall <- data %>%
 
 Q29_overall
 
-#Q30
+# ============================================================
+# Q30
+# ============================================================
 
 Q30_overall <- data %>%
     tab_cells(Q30) %>%
@@ -689,7 +770,9 @@ Q30_overall <- data %>%
 
 Q30_overall
 
-#Q31
+# ============================================================
+# Q31
+# ============================================================
 
 Q31_overall <- data %>%
     tab_cells(Q31) %>%
@@ -699,3 +782,16 @@ Q31_overall <- data %>%
     tab_pivot()
 
 Q31_overall
+
+# ============================================================
+# Q33
+# ============================================================
+
+Q33_overall <- data %>%
+    tab_cells(Q33) %>%
+    tab_cols(total()) %>%
+    tab_stat_cases(label = "Count") %>%
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+
+Q33_overall
