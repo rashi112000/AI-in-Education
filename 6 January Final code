@@ -1,0 +1,674 @@
+library(cowplot)
+library(dplyr)
+library(expss)
+library(janitor)
+library(patchwork)
+library(ggplot2)
+library(sf)
+library(stringr)
+library(tidyverse)
+library(gapminder)
+library(lubridate)
+library(readxl)
+library(writexl)
+library(plotly)
+library(huxtable)
+
+getwd()
+
+# Importing the data 
+read.csv("data_school.csv")
+data <- read.csv("data_school.csv")
+View(data)
+
+# Removing time stamp
+data <- data %>% select(-Timestamp)
+View(data)
+
+# Checking who all have said No to participate in the study 
+"No" %in% data$Q1
+
+sum(grepl("No", data$Q1, ignore.case = TRUE), na.rm = TRUE)
+data <- data %>%
+  filter(!grepl("^no$", Q1, ignore.case = TRUE))
+
+# Q3: CLEANING SCHOOL 
+
+table(data$Q5)
+
+data <- data %>%
+    mutate(
+        Q5_clean = Q5 %>%
+            str_trim() %>%
+            str_to_upper(),
+        Q5_clean = na_if(Q5_clean, "")
+    )
+
+table(data$Q5_clean)
+
+# Removing SPDAV - as it was already coded as SRDAV
+# Removing DPSS
+
+data <- data %>%
+  filter(Q5_clean != "SPDAV")
+
+data <- data %>%
+    filter(Q5_clean != "DPSS")
+
+table(data$Q5_clean)
+
+# CHECKING total count 
+data %>%
+  count(Q5_clean) %>%
+  summarise(total_n = sum(n)) # 910
+
+
+
+# PROFILE OF RESPONDENTS
+
+# Q3
+data %>%
+  tab_cells(Q3) %>%
+  tab_stat_cpct(total_label = "#Total cases") %>%
+  tab_pivot()
+
+
+# Q5
+data %>%
+  tab_cells(Q5_clean) %>%
+  tab_stat_cpct(total_label = "#Total cases") %>%
+  tab_pivot()
+
+# Q6
+data %>%
+  tab_cells(Q6) %>%
+  tab_stat_cpct(total_label = "#Total cases") %>%
+  tab_pivot()
+
+
+# Q7
+
+Q7a <- data %>%
+  tab_cells(Q7) %>%
+  tab_cols(total()) %>%
+  tab_stat_cases(label = "Count") %>%
+  tab_stat_cpct(label = "Percent") %>%
+  tab_pivot()
+
+Q7a
+
+# CODE FOR COMBINING HUMANITIES STREAM
+
+data1 <- data %>%
+    mutate(
+        Q7_combined = case_when(
+            Q7 %in% c("Humanities/Arts with Mathematics",
+                      "Humanities/Arts without Mathematics") ~ "Humanities / Arts",
+            TRUE ~ Q7
+        )
+    )
+
+# Now the CROSS TAB Q7 X Q11
+
+Q7_Q11_crosstab_combined <- data1 %>%
+    tab_cells(Q7_combined) %>%            # rows = AI use frequency
+    tab_cols(Q11) %>%     # columns = combined streams
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+Q7_Q11_crosstab_combined
+
+
+# CROSS TAB Q7 X Q16
+Q7_Q16_crosstab_combined <- data1 %>%
+    tab_cells(Q7_combined) %>%            # rows = AI use frequency
+    tab_cols(Q16) %>%     # columns = combined streams
+    tab_stat_rpct(label = "Percent") %>%
+    tab_pivot()
+Q7_Q16_crosstab_combined
+
+# Now the CROSS TAB Q7 X Q18a,Q18b,Q18c,Q18d
+
+# Q8
+
+var_lab(data$Q8a) <- "Physics"
+var_lab(data$Q8b) <- "Chemistry"
+var_lab(data$Q8c) <- "Mathematics"
+var_lab(data$Q8d) <- "Biology"
+var_lab(data$Q8e) <- "Computer Science"
+var_lab(data$Q8f) <- "Information Practices / AI"
+var_lab(data$Q8g) <- "Psychology"
+var_lab(data$Q8h) <- "Physical Education"
+var_lab(data$Q8i) <- "Accountancy"
+var_lab(data$Q8j) <- "Business Studies"
+var_lab(data$Q8k) <- "Economics"
+var_lab(data$Q8l) <- "Entrepreneurship"
+var_lab(data$Q8m) <- "Legal Studies"
+var_lab(data$Q8n) <- "Political Science"
+var_lab(data$Q8o) <- "English"
+var_lab(data$Q8p) <- "History"
+var_lab(data$Q8q) <- "Sociology"
+var_lab(data$Q8r) <- "Geography"
+
+q8_vars <- c(
+  "Q8a","Q8b","Q8c","Q8d","Q8e","Q8f","Q8g","Q8h","Q8i",
+  "Q8j","Q8k","Q8l","Q8m","Q8n","Q8o","Q8p","Q8q","Q8r"
+)
+
+q8a<- data %>%
+  tab_cells(select(., all_of(q8_vars))) %>%
+  tab_stat_cpct(total_label = "#Total cases") %>%
+  tab_pivot()
+
+q8a
+
+# Q9
+Q9a <- data %>%
+  tab_cells(Q9) %>%
+  tab_cols(total()) %>%
+  tab_stat_cases(label = "Count") %>%
+  tab_stat_cpct(label = "Percent") %>%
+  tab_pivot()
+Q9a
+
+
+# Q10
+Q10a <- data %>%
+  tab_cells(Q10) %>%
+  tab_cols(total()) %>%
+  tab_stat_cases(label = "Count") %>%
+  tab_stat_cpct(label = "Percent") %>%
+  tab_pivot()
+Q10a
+
+
+# Q11
+
+Q11_overall <- data %>%
+    tab_cells(Q11) %>%
+    tab_cols(total()) %>%
+    tab_stat_cases(label = "Count") %>%
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+
+Q11_overall
+
+# Q12
+
+Q12_overall <- data %>%
+    tab_cells(Q12) %>%
+    tab_cols(total()) %>%
+    tab_stat_cases(label = "Count") %>%
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+
+Q12_overall
+
+
+# Q13
+
+Q13_overall <- data %>%
+  tab_cells(Q13a, Q13b, Q13c, Q13d) %>%
+  tab_cols(total()) %>%
+  tab_stat_cases(label = "Count") %>%
+  tab_stat_cpct(label = "Percent") %>%
+  tab_pivot()
+
+Q13_overall
+
+# Q14
+
+Q14_overall <- data %>%
+    tab_cells(Q14) %>%
+    tab_cols(total()) %>%
+    tab_stat_cases(label = "Count") %>%
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+
+Q14_overall
+
+# Q15
+Q15_overall <- data %>%
+    tab_cells(Q15) %>%
+    tab_cols(total()) %>%
+    tab_stat_cases(label = "Count") %>%
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+
+Q15_overall
+
+# Q16
+unique(data$Q16) # Entrepreneurship doesn't exist- was not selected, we have NA 
+sum(is.na(data$Q16))
+
+Q16_overall <- data %>%
+    tab_cells(Q16) %>%
+    tab_cols(total()) %>%
+    tab_stat_cases(label = "Count") %>%
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+
+Q16_overall
+
+# Q17
+
+var_lab(data$Q17a) <- "Physics"
+var_lab(data$Q17b) <- "Chemistry"
+var_lab(data$Q17c) <- "Mathematics"
+var_lab(data$Q17d) <- "Biology"
+var_lab(data$Q17e) <- "Computer Science"
+var_lab(data$Q17f) <- "Information Practices / AI"
+var_lab(data$Q17g) <- "Psychology"
+var_lab(data$Q17h) <- "Physical Education"
+var_lab(data$Q17i) <- "Accountancy"
+var_lab(data$Q17j) <- "Business Studies"
+var_lab(data$Q17k) <- "Economics"
+var_lab(data$Q17l) <- "Entrepreneurship"
+var_lab(data$Q17m) <- "Legal Studies"
+var_lab(data$Q17n) <- "Political Science"
+var_lab(data$Q17o) <- "English"
+var_lab(data$Q17p) <- "History"
+var_lab(data$Q17q) <- "Sociology"
+var_lab(data$Q17r) <- "Geography"
+
+q17_vars <- c(
+  "Q17a","Q17b","Q17c","Q17d","Q17e","Q17f",
+  "Q17g","Q17h","Q17i","Q17j","Q17k","Q17l",
+  "Q17m","Q17n","Q17o","Q17p","Q17q","Q17r"
+)
+
+
+q17a<- data %>%
+  tab_cells(select(., all_of(q17_vars))) %>%
+  tab_stat_cpct(total_label = "#Total cases") %>%
+  tab_pivot()
+q17a
+
+
+# Now, recoding "I do not use AI for this subject" as NA 
+
+var_lab(data$Q17a) <- "Physics"
+var_lab(data$Q17b) <- "Chemistry"
+var_lab(data$Q17c) <- "Mathematics"
+var_lab(data$Q17d) <- "Biology"
+var_lab(data$Q17e) <- "Computer Science"
+var_lab(data$Q17f) <- "Information Practices / AI"
+var_lab(data$Q17g) <- "Psychology"
+var_lab(data$Q17h) <- "Physical Education"
+var_lab(data$Q17i) <- "Accountancy"
+var_lab(data$Q17j) <- "Business Studies"
+var_lab(data$Q17k) <- "Economics"
+var_lab(data$Q17l) <- "Entrepreneurship"
+var_lab(data$Q17m) <- "Legal Studies"
+var_lab(data$Q17n) <- "Political Science"
+var_lab(data$Q17o) <- "English"
+var_lab(data$Q17p) <- "History"
+var_lab(data$Q17q) <- "Sociology"
+var_lab(data$Q17r) <- "Geography"
+
+Q17_vars <- c(
+    "Q17a","Q17b","Q17c","Q17d","Q17e","Q17f",
+    "Q17g","Q17h","Q17i","Q17j","Q17k","Q17l",
+    "Q17m","Q17n","Q17o","Q17p","Q17q","Q17r"
+)
+
+data[q17_vars] <- lapply(
+    data[Q17_vars],
+    function(x) {
+        x <- as.character(x)
+        dplyr::case_when(
+            x == "I do not use AI for this subject" ~ NA_character_,
+            TRUE ~ x
+        )
+    }
+)
+
+    
+
+var_lab(data$Q17a) <- "Physics"
+var_lab(data$Q17b) <- "Chemistry"
+var_lab(data$Q17c) <- "Mathematics"
+var_lab(data$Q17d) <- "Biology"
+var_lab(data$Q17e) <- "Computer Science"
+var_lab(data$Q17f) <- "Information Practices / AI"
+var_lab(data$Q17g) <- "Psychology"
+var_lab(data$Q17h) <- "Physical Education"
+var_lab(data$Q17i) <- "Accountancy"
+var_lab(data$Q17j) <- "Business Studies"
+var_lab(data$Q17k) <- "Economics"
+var_lab(data$Q17l) <- "Entrepreneurship"
+var_lab(data$Q17m) <- "Legal Studies"
+var_lab(data$Q17n) <- "Political Science"
+var_lab(data$Q17o) <- "English"
+var_lab(data$Q17p) <- "History"
+var_lab(data$Q17q) <- "Sociology"
+var_lab(data$Q17r) <- "Geography"
+
+Q17_vars <- c(
+    "Q17a","Q17b","Q17c","Q17d","Q17e","Q17f",
+    "Q17g","Q17h","Q17i","Q17j","Q17k","Q17l",
+    "Q17m","Q17n","Q17o","Q17p","Q17q","Q17r"
+)
+
+
+Q17_overall <- data %>%
+    tab_cells(select(., all_of(Q17_vars))) %>%
+    tab_stat_cpct(total_label = "#Total cases") %>%
+    tab_pivot()
+
+Q17_overall
+
+data <- data %>%
+  mutate(
+    Q17a_clean = na_if(Q17a, "I Do Not Use AI for This Subject"),
+    Q17b_clean = na_if(Q17b, "I Do Not Use AI for This Subject"),
+    Q17c_clean = na_if(Q17c, "I Do Not Use AI for This Subject"),
+    Q17d_clean = na_if(Q17d, "I Do Not Use AI for This Subject"),
+    Q17e_clean = na_if(Q17e, "I Do Not Use AI for This Subject"),
+    Q17f_clean = na_if(Q17f, "I Do Not Use AI for This Subject"),
+    Q17g_clean = na_if(Q17g, "I Do Not Use AI for This Subject"),
+    Q17h_clean = na_if(Q17h, "I Do Not Use AI for This Subject"),
+    Q17i_clean = na_if(Q17i, "I Do Not Use AI for This Subject"),
+    Q17j_clean = na_if(Q17j, "I Do Not Use AI for This Subject"),
+    Q17k_clean = na_if(Q17k, "I Do Not Use AI for This Subject"),
+    Q17l_clean = na_if(Q17l, "I Do Not Use AI for This Subject"),
+    Q17m_clean = na_if(Q17m, "I Do Not Use AI for This Subject"),
+    Q17n_clean = na_if(Q17n, "I Do Not Use AI for This Subject"),
+    Q17o_clean = na_if(Q17o, "I Do Not Use AI for This Subject"),
+    Q17p_clean = na_if(Q17p, "I Do Not Use AI for This Subject"),
+    Q17q_clean = na_if(Q17q, "I Do Not Use AI for This Subject"),
+    Q17r_clean = na_if(Q17r, "I Do Not Use AI for This Subject")
+  )
+
+var_lab(data$Q17a_clean) <- "Physics"
+var_lab(data$Q17b_clean) <- "Chemistry"
+var_lab(data$Q17c_clean) <- "Mathematics"
+var_lab(data$Q17d_clean) <- "Biology"
+var_lab(data$Q17e_clean) <- "Computer Science"
+var_lab(data$Q17f_clean) <- "Information Practices / AI"
+var_lab(data$Q17g_clean) <- "Psychology"
+var_lab(data$Q17h_clean) <- "Physical Education"
+var_lab(data$Q17i_clean) <- "Accountancy"
+var_lab(data$Q17j_clean) <- "Business Studies"
+var_lab(data$Q17k_clean) <- "Economics"
+var_lab(data$Q17l_clean) <- "Entrepreneurship"
+var_lab(data$Q17m_clean) <- "Legal Studies"
+var_lab(data$Q17n_clean) <- "Political Science"
+var_lab(data$Q17o_clean) <- "English"
+var_lab(data$Q17p_clean) <- "History"
+var_lab(data$Q17q_clean) <- "Sociology"
+var_lab(data$Q17r_clean) <- "Geography"
+
+q17_clean_vars <- c(
+  "Q17a_clean","Q17b_clean","Q17c_clean","Q17d_clean","Q17e_clean","Q17f_clean",
+  "Q17g_clean","Q17h_clean","Q17i_clean","Q17j_clean","Q17k_clean","Q17l_clean",
+  "Q17m_clean","Q17n_clean","Q17o_clean","Q17p_clean","Q17q_clean","Q17r_clean"
+)
+
+Q17_clean_table <- data %>%
+  tab_cells(select(., all_of(q17_clean_vars))) %>%
+  tab_stat_cpct(total_label = "#Total cases") %>%
+  tab_pivot()
+
+Q17_clean_table
+
+# Q18
+
+
+##Q18
+
+var_lab(data$Q18a) <- "ChatGPT or other generative AI"
+var_lab(data$Q18b) <- "Language and writing support tools (e.g., Grammarly)"
+var_lab(data$Q18c) <- "EdTech platforms (e.g., Physics Wallah, BYJU’s, Vedantu, Khan Academy)"
+var_lab(data$Q18d) <- "AI learning support tools (e.g., NoteGPT, Brainly, Google Lens)"
+
+q18_vars <- c("Q18a", "Q18b", "Q18c", "Q18d")
+
+q18a <- data %>% 
+  tab_cells(select(., all_of(q18_vars))) %>% 
+  tab_stat_cpct(total_label = "#Total cases") %>% 
+  tab_pivot() 
+q18a
+
+
+# CROSS TAB Q7 X Q18
+
+data1 <- data %>%
+    mutate(
+        Q7_combined = case_when(
+            Q7 %in% c("Humanities/Arts with Mathematics",
+                      "Humanities/Arts without Mathematics") ~ "Humanities / Arts",
+            TRUE ~ Q7
+        )
+    )
+
+q18b <- cro_rpct(data1$Q7_combined, data1[q18_vars])
+q18b
+
+
+# Q19
+var_lab(data$Q19a) <- "Searching for academic information (definitions, dates, etc.)"
+var_lab(data$Q19b) <- "Writing assistance (homework, projects, essays, grammar correction)"
+var_lab(data$Q19c) <- "Calculations and solving numerical problems"
+var_lab(data$Q19d) <- "Understanding concepts"
+var_lab(data$Q19e) <- "Practice exercises (mock papers, MCQs, quizzes)"
+var_lab(data$Q19f) <- "Visual learning (flashcards, mind maps, flowcharts)"
+var_lab(data$Q19g) <- "Creating personalised study plans (e.g., timetable)"
+
+q19_vars <- c(
+  "Q19a","Q19b","Q19c","Q19d",
+  "Q19e","Q19f","Q19g"
+)
+
+q19a <- data %>%
+  tab_cells(select(., all_of(q19_vars))) %>%
+  tab_stat_cpct(total_label = "#Total cases") %>%
+  tab_pivot() 
+
+q19a
+
+# FINAL TABLE 
+data <- data %>%
+  mutate(
+    Q19c_clean = case_when(
+      Q7 %in% c("Humanities/Arts with Mathematics",
+                "Humanities/Arts without Mathematics") ~ NA_character_,
+      TRUE ~ as.character(Q19c)
+    )
+  )
+
+
+var_lab(data$Q19c_clean) <- 
+  "Calculations and solving numerical problems"
+
+var_lab(data$Q19a) <- "Searching for academic information (definitions, dates, etc.)"
+var_lab(data$Q19b) <- "Writing assistance (homework, projects, essays, grammar correction)"
+var_lab(data$Q19c) <- "Calculations and solving numerical problems"
+var_lab(data$Q19d) <- "Understanding concepts"
+var_lab(data$Q19e) <- "Practice exercises (mock papers, MCQs, quizzes)"
+var_lab(data$Q19f) <- "Visual learning (flashcards, mind maps, flowcharts)"
+var_lab(data$Q19g) <- "Creating personalised study plans (e.g., timetable)"
+
+q19_vars <- c(
+  "Q19a","Q19b","Q19c_clean","Q19d",
+  "Q19e","Q19f","Q19g"
+)
+
+q19a <- data %>%
+  tab_cells(select(., all_of(q19_vars))) %>%
+  tab_stat_cpct(total_label = "#Total cases") %>%
+  tab_pivot() 
+
+q19a
+
+# Q 20
+
+var_lab(data$Q20a) <- "Preparation for school / board exams"
+var_lab(data$Q20b) <- "Preparation for entrance exams"
+var_lab(data$Q20c) <- "Projects / assignments"
+var_lab(data$Q20d) <- "Extra learning beyond school"
+
+q20_vars <- c("Q20a", "Q20b", "Q20c", "Q20d")
+
+q20a <- data %>%
+    tab_cells(select(., all_of(q20_vars))) %>%
+    tab_stat_cpct(total_label = "#Total cases") %>%
+    tab_pivot()
+
+q20a
+
+
+
+# Q 21
+
+var_lab(data$Q21a) <- "Generative AI tools (e.g., ChatGPT, Gemini)"
+var_lab(data$Q21b) <- "Offline / Private / Home tuition"
+var_lab(data$Q21c) <- "EdTech platforms (e.g., Physics Wallah, BYJU’s, Toppr)"
+var_lab(data$Q21d) <- "AI learning support tools (e.g., NoteGPT, Brainly, Google Lens)"
+
+q21_vars <- c("Q21a", "Q21b", "Q21c", "Q21d")
+
+q21a <- data %>%
+  tab_cells(select(., all_of(q21_vars))) %>%
+  tab_stat_cpct(total_label = "#Total cases") %>%
+  tab_pivot() 
+
+q21a
+
+
+# Q 22
+
+var_lab(data$Q22a) <- "Generative AI tools (e.g., ChatGPT, Gemini)"
+var_lab(data$Q22b) <- "Offline / Private / Home tuition"
+var_lab(data$Q22c) <- "EdTech platforms (e.g., Physics Wallah, BYJU’s, Toppr)"
+var_lab(data$Q22d) <- "AI learning support tools (e.g., NoteGPT, Brainly, Google Lens)"
+
+q22_vars <- c("Q22a", "Q22b", "Q22c", "Q22d")
+
+q22a <- data %>%
+  tab_cells(select(., all_of(q22_vars))) %>%
+  tab_stat_cpct(total_label = "#Total cases") %>%
+  tab_pivot()
+
+q22a
+
+
+# Q23
+
+Q23_overall <- data %>%
+    tab_cells(Q23) %>%
+    tab_cols(total()) %>%
+    tab_stat_cases(label = "Count") %>%
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+
+Q23_overall
+
+
+# Q24
+
+
+data <- data %>%
+  mutate(
+    # Q24a: remove Humanities (with & without Maths)
+    Q24a_clean = case_when(
+      Q7 %in% c("Humanities/Arts with Mathematics",
+                "Humanities/Arts without Mathematics") ~ NA_character_,
+      TRUE ~ Q24a
+    ),
+
+    # Q24d: keep ONLY Humanities
+    Q24d_clean = case_when(
+      Q7 %in% c("Humanities/Arts with Mathematics",
+                "Humanities/Arts without Mathematics") ~ Q24d,
+      TRUE ~ NA_character_
+    )
+  )
+
+#Q24
+
+Q24_overall <- data %>%
+    tab_cells(Q24a_clean, Q24b, Q24c, Q24d_clean) %>%
+    tab_cols(total()) %>%
+    tab_stat_cases(label = "Count") %>%
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+
+Q24_overall
+
+# Q25
+
+Q25_overall <- data %>%
+    tab_cells(Q25) %>%
+    tab_cols(total()) %>%
+    tab_stat_cases(label = "Count") %>%
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+
+Q25_overall
+
+#Q26
+
+Q26_overall <- data %>%
+    tab_cells(Q26a, Q26b, Q26c) %>%
+    tab_cols(total()) %>%
+    tab_stat_cases(label = "Count") %>%
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+
+Q26_overall
+
+#Q27
+
+Q27_overall <- data %>%
+    tab_cells(Q27a, Q27b, Q27c, Q27d, Q27e) %>%
+    tab_cols(total()) %>%
+    tab_stat_cases(label = "Count") %>%
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+
+Q27_overall
+
+#Q29
+
+Q29_overall <- data %>%
+    tab_cells(Q29a, Q29b, Q29c) %>%
+    tab_cols(total()) %>%
+    tab_stat_cases(label = "Count") %>%
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+
+Q29_overall
+
+#Q30
+
+Q30_overall <- data %>%
+    tab_cells(Q30) %>%
+    tab_cols(total()) %>%
+    tab_stat_cases(label = "Count") %>%
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+
+Q30_overall
+
+#Q31
+
+Q31_overall <- data %>%
+    tab_cells(Q31) %>%
+    tab_cols(total()) %>%
+    tab_stat_cases(label = "Count") %>%
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+
+Q31_overall
+
+
+
+
+
+
+
+
+
+  
+
+  
