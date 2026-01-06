@@ -1,0 +1,495 @@
+# ============================================================
+# LIBRARIES
+# ============================================================
+
+library(cowplot)
+library(dplyr)
+library(expss)
+library(janitor)
+library(patchwork)
+library(ggplot2)
+library(sf)
+library(stringr)
+library(tidyverse)
+library(gapminder)
+library(lubridate)
+library(readxl)
+library(writexl)
+library(plotly)
+library(huxtable)
+
+
+# ============================================================
+# DATA IMPORT & BASIC CLEANING
+# ============================================================
+
+getwd()
+
+read.csv("data_school.csv")
+data <- read.csv("data_school.csv")
+View(data)
+
+data <- data %>% select(-Timestamp)
+View(data)
+
+
+# ============================================================
+# CONSENT FILTER (Q1)
+# ============================================================
+
+"No" %in% data$Q1
+
+sum(grepl("No", data$Q1, ignore.case = TRUE), na.rm = TRUE)
+
+data <- data %>%
+  filter(!grepl("^no$", Q1, ignore.case = TRUE))
+
+
+# ============================================================
+# SCHOOL CLEANING (Q5)
+# ============================================================
+
+table(data$Q5)
+
+data <- data %>%
+  mutate(
+    Q5_clean = Q5 %>%
+      str_trim() %>%
+      str_to_upper(),
+    Q5_clean = na_if(Q5_clean, "")
+  )
+
+table(data$Q5_clean)
+
+data <- data %>% filter(Q5_clean != "SPDAV")
+data <- data %>% filter(Q5_clean != "DPSS")
+
+table(data$Q5_clean)
+
+
+# ============================================================
+# TOTAL COUNT CHECK
+# ============================================================
+
+data %>%
+  count(Q5_clean) %>%
+  summarise(total_n = sum(n))
+
+
+# ============================================================
+# PROFILE OF RESPONDENTS
+# ============================================================
+
+# ----------------------------
+# Q3
+# ----------------------------
+data %>%
+  tab_cells(Q3) %>%
+  tab_stat_cpct(total_label = "#Total cases") %>%
+  tab_pivot()
+
+# ----------------------------
+# Q5
+# ----------------------------
+data %>%
+  tab_cells(Q5_clean) %>%
+  tab_stat_cpct(total_label = "#Total cases") %>%
+  tab_pivot()
+
+# ----------------------------
+# Q6
+# ----------------------------
+data %>%
+  tab_cells(Q6) %>%
+  tab_stat_cpct(total_label = "#Total cases") %>%
+  tab_pivot()
+
+
+# ============================================================
+# CROSS TAB: Q6 × Q27e
+# ============================================================
+
+data1 <- data %>%
+  mutate(
+    Q7_combined = case_when(
+      Q7 %in% c(
+        "Humanities/Arts with Mathematics",
+        "Humanities/Arts without Mathematics"
+      ) ~ "Humanities / Arts",
+      TRUE ~ Q7
+    )
+  )
+
+Q6_Q27e_crosstab_combined <- data1 %>%
+  tab_cells(Q6) %>%
+  tab_cols(Q27e) %>%
+  tab_stat_rpct(label = "Percent") %>%
+  tab_pivot()
+
+Q6_Q27e_crosstab_combined
+
+
+# ============================================================
+# Q7
+# ============================================================
+
+Q7a <- data %>%
+  tab_cells(Q7) %>%
+  tab_cols(total()) %>%
+  tab_stat_cases(label = "Count") %>%
+  tab_stat_cpct(label = "Percent") %>%
+  tab_pivot()
+
+Q7a
+
+
+# ============================================================
+# STREAM COMBINING (HUMANITIES)
+# ============================================================
+
+data1 <- data %>%
+  mutate(
+    Q7_combined = case_when(
+      Q7 %in% c(
+        "Humanities/Arts with Mathematics",
+        "Humanities/Arts without Mathematics"
+      ) ~ "Humanities / Arts",
+      TRUE ~ Q7
+    )
+  )
+
+
+# ============================================================
+# CROSS TAB: Q7 × Q11
+# ============================================================
+
+Q7_Q11_crosstab_combined <- data1 %>%
+  tab_cells(Q7_combined) %>%
+  tab_cols(Q11) %>%
+  tab_stat_cpct(label = "Percent") %>%
+  tab_pivot()
+
+Q7_Q11_crosstab_combined
+
+
+# ============================================================
+# CROSS TAB: Q7 × Q16
+# ============================================================
+
+Q7_Q16_crosstab_combined <- data1 %>%
+  tab_cells(Q7_combined) %>%
+  tab_cols(Q16) %>%
+  tab_stat_rpct(label = "Percent") %>%
+  tab_pivot()
+
+Q7_Q16_crosstab_combined
+
+
+# ============================================================
+# Q8 – SUBJECTS STUDIED
+# ============================================================
+
+q8a <- data %>%
+  tab_cells(Q8a,Q8b,Q8c,Q8d,Q8e,Q8f,Q8g,Q8h,Q8i,
+            Q8j,Q8k,Q8l,Q8m,Q8n,Q8o,Q8p,Q8q,Q8r) %>%
+  tab_stat_cpct(total_label = "#Total cases") %>%
+  tab_pivot()
+
+q8a
+
+
+# ============================================================
+# Q9
+# ============================================================
+
+Q9a <- data %>%
+  tab_cells(Q9) %>%
+  tab_cols(total()) %>%
+  tab_stat_cases(label = "Count") %>%
+  tab_stat_cpct(label = "Percent") %>%
+  tab_pivot()
+
+Q9a
+
+
+# ============================================================
+# Q10
+# ============================================================
+
+Q10a <- data %>%
+  tab_cells(Q10) %>%
+  tab_cols(total()) %>%
+  tab_stat_cases(label = "Count") %>%
+  tab_stat_cpct(label = "Percent") %>%
+  tab_pivot()
+
+Q10a
+
+
+# ============================================================
+# Q11
+# ============================================================
+
+Q11_overall <- data %>%
+  tab_cells(Q11) %>%
+  tab_cols(total()) %>%
+  tab_stat_cases(label = "Count") %>%
+  tab_stat_cpct(label = "Percent") %>%
+  tab_pivot()
+
+Q11_overall
+
+
+# ============================================================
+# Q12
+# ============================================================
+
+Q12_overall <- data %>%
+  tab_cells(Q12) %>%
+  tab_cols(total()) %>%
+  tab_stat_cases(label = "Count") %>%
+  tab_stat_cpct(label = "Percent") %>%
+  tab_pivot()
+
+Q12_overall
+
+
+# ============================================================
+# Q13
+# ============================================================
+
+Q13_overall <- data %>%
+  tab_cells(Q13a,Q13b,Q13c,Q13d) %>%
+  tab_cols(total()) %>%
+  tab_stat_cases(label = "Count") %>%
+  tab_stat_cpct(label = "Percent") %>%
+  tab_pivot()
+
+Q13_overall
+
+
+# ============================================================
+# Q14
+# ============================================================
+
+Q14_overall <- data %>%
+  tab_cells(Q14) %>%
+  tab_cols(total()) %>%
+  tab_stat_cases(label = "Count") %>%
+  tab_stat_cpct(label = "Percent") %>%
+  tab_pivot()
+
+Q14_overall
+
+
+# ============================================================
+# Q15
+# ============================================================
+
+Q15_overall <- data %>%
+  tab_cells(Q15) %>%
+  tab_cols(total()) %>%
+  tab_stat_cases(label = "Count") %>%
+  tab_stat_cpct(label = "Percent") %>%
+  tab_pivot()
+
+Q15_overall
+
+
+# ============================================================
+# Q16
+# ============================================================
+
+Q16_overall <- data %>%
+  tab_cells(Q16) %>%
+  tab_cols(total()) %>%
+  tab_stat_cases(label = "Count") %>%
+  tab_stat_cpct(label = "Percent") %>%
+  tab_pivot()
+
+Q16_overall
+
+
+# ============================================================
+# Q17 – SUBJECT-WISE AI USAGE
+# ============================================================
+
+Q17_overall <- data %>%
+  tab_cells(Q17a,Q17b,Q17c,Q17d,Q17e,Q17f,Q17g,Q17h,Q17i,
+            Q17j,Q17k,Q17l,Q17m,Q17n,Q17o,Q17p,Q17q,Q17r) %>%
+  tab_stat_cpct(total_label = "#Total cases") %>%
+  tab_pivot()
+
+Q17_overall
+
+
+# ============================================================
+# Q18 – AI TOOLS USED
+# ============================================================
+
+q18a <- data %>%
+  tab_cells(Q18a,Q18b,Q18c,Q18d) %>%
+  tab_stat_cpct(total_label = "#Total cases") %>%
+  tab_pivot()
+
+q18a
+
+
+# ============================================================
+# Q19 – PURPOSE OF AI USE
+# ============================================================
+
+q19a <- data %>%
+  tab_cells(Q19a,Q19b,Q19c,Q19d,Q19e,Q19f,Q19g) %>%
+  tab_stat_cpct(total_label = "#Total cases") %>%
+  tab_pivot()
+
+q19a
+
+
+# ============================================================
+# Q20
+# ============================================================
+
+q20a <- data %>%
+  tab_cells(Q20a,Q20b,Q20c,Q20d) %>%
+  tab_stat_cpct(total_label = "#Total cases") %>%
+  tab_pivot()
+
+q20a
+
+
+# ============================================================
+# Q21
+# ============================================================
+
+q21a <- data %>%
+  tab_cells(Q21a,Q21b,Q21c,Q21d) %>%
+  tab_stat_cpct(total_label = "#Total cases") %>%
+  tab_pivot()
+
+q21a
+
+
+# ============================================================
+# Q22
+# ============================================================
+
+q22a <- data %>%
+  tab_cells(Q22a,Q22b,Q22c,Q22d) %>%
+  tab_stat_cpct(total_label = "#Total cases") %>%
+  tab_pivot()
+
+q22a
+
+
+# ============================================================
+# Q23
+# ============================================================
+
+Q23_overall <- data %>%
+  tab_cells(Q23) %>%
+  tab_cols(total()) %>%
+  tab_stat_cases(label = "Count") %>%
+  tab_stat_cpct(label = "Percent") %>%
+  tab_pivot()
+
+Q23_overall
+
+
+# ============================================================
+# Q24
+# ============================================================
+
+Q24_overall <- data %>%
+  tab_cells(Q24a,Q24b,Q24c,Q24d) %>%
+  tab_cols(total()) %>%
+  tab_stat_cases(label = "Count") %>%
+  tab_stat_cpct(label = "Percent") %>%
+  tab_pivot()
+
+Q24_overall
+
+
+# ============================================================
+# Q25
+# ============================================================
+
+Q25_overall <- data %>%
+  tab_cells(Q25) %>%
+  tab_cols(total()) %>%
+  tab_stat_cases(label = "Count") %>%
+  tab_stat_cpct(label = "Percent") %>%
+  tab_pivot()
+
+Q25_overall
+
+
+# ============================================================
+# Q26
+# ============================================================
+
+Q26_overall <- data %>%
+  tab_cells(Q26a,Q26b,Q26c) %>%
+  tab_cols(total()) %>%
+  tab_stat_cases(label = "Count") %>%
+  tab_stat_cpct(label = "Percent") %>%
+  tab_pivot()
+
+Q26_overall
+
+
+# ============================================================
+# Q27
+# ============================================================
+
+Q27_overall <- data %>%
+  tab_cells(Q27a,Q27b,Q27c,Q27d,Q27e) %>%
+  tab_cols(total()) %>%
+  tab_stat_cases(label = "Count") %>%
+  tab_stat_cpct(label = "Percent") %>%
+  tab_pivot()
+
+Q27_overall
+
+
+# ============================================================
+# Q29
+# ============================================================
+
+Q29_overall <- data %>%
+  tab_cells(Q29a,Q29b,Q29c) %>%
+  tab_cols(total()) %>%
+  tab_stat_cases(label = "Count") %>%
+  tab_stat_cpct(label = "Percent") %>%
+  tab_pivot()
+
+Q29_overall
+
+
+# ============================================================
+# Q30
+# ============================================================
+
+Q30_overall <- data %>%
+  tab_cells(Q30) %>%
+  tab_cols(total()) %>%
+  tab_stat_cases(label = "Count") %>%
+  tab_stat_cpct(label = "Percent") %>%
+  tab_pivot()
+
+Q30_overall
+
+
+# ============================================================
+# Q31
+# ============================================================
+
+Q31_overall <- data %>%
+  tab_cells(Q31) %>%
+  tab_cols(total()) %>%
+  tab_stat_cases(label = "Count") %>%
+  tab_stat_cpct(label = "Percent") %>%
+  tab_pivot()
+
+Q31_overall
