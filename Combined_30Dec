@@ -429,7 +429,7 @@ Q33_overall
 Q7_Q16_crosstab <- data %>%
     tab_cells(Q16) %>%          # rows = subjects
     tab_cols(Q7) %>%            # columns = streams
-    tab_stat_cpct(label = "Percent") %>%
+    tab_stat_rpct(label = "Percent") %>%
     tab_pivot()
 
 Q7_Q16_crosstab
@@ -600,7 +600,10 @@ data <- data %>%
       TRUE ~ NA_character_
     )
   )
-NOW WE RUN, 
+
+
+# NOW WE RUN, 
+
 Q25_overall <- data %>%
     tab_cells(Q25) %>%
     tab_cols(total()) %>%
@@ -609,7 +612,6 @@ Q25_overall <- data %>%
     tab_pivot()
 
 Q25_overall
-
 
 
 # cross tab- 7 and 25
@@ -637,6 +639,7 @@ data1 <- data %>%
             TRUE ~ Q7
         )
     )
+
 q18b <- cro_rpct(data1$Q7_combined, data1[q18_vars])
 
 
