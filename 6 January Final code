@@ -805,14 +805,14 @@ Q33_overall
 Q21a_Q7_crosstab_combined <- data1 %>%
     tab_cells(Q7_combined) %>%            # rows = AI use frequency
     tab_cols(Q21a) %>%     # columns = combined streams
-    tab_stat_cpct(label = "Percent") %>%
+    tab_stat_rpct(label = "Percent") %>%
     tab_pivot()
 Q21a_Q7_crosstab_combined
 
 Q21b_Q7_crosstab_combined <- data1 %>%
     tab_cells(Q7_combined) %>%            # rows = AI use frequency
     tab_cols(Q21b) %>%     # columns = combined streams
-    tab_stat_cpct(label = "Percent") %>%
+    tab_stat_rpct(label = "Percent") %>%
     tab_pivot()
 Q21b_Q7_crosstab_combined
 
@@ -820,14 +820,14 @@ Q21b_Q7_crosstab_combined
 Q21c_Q7_crosstab_combined <- data1 %>%
     tab_cells(Q7_combined) %>%            # rows = AI use frequency
     tab_cols(Q21c) %>%     # columns = combined streams
-    tab_stat_cpct(label = "Percent") %>%
+    tab_stat_rpct(label = "Percent") %>%
     tab_pivot()
 Q21c_Q7_crosstab_combined
 
 Q21d_Q7_crosstab_combined <- data1 %>%
     tab_cells(Q7_combined) %>%            # rows = AI use frequency
     tab_cols(Q21d) %>%     # columns = combined streams
-    tab_stat_cpct(label = "Percent") %>%
+    tab_stat_rpct(label = "Percent") %>%
     tab_pivot()
 Q21d_Q7_crosstab_combined
 
@@ -840,27 +840,27 @@ Q21d_Q7_crosstab_combined
 Q22a_Q7_crosstab_combined <- data1 %>%
     tab_cells(Q7_combined) %>%            # rows = AI use frequency
     tab_cols(Q22a) %>%     # columns = combined streams
-    tab_stat_cpct(label = "Percent") %>%
+    tab_stat_rpct(label = "Percent") %>%
     tab_pivot()
 Q22a_Q7_crosstab_combined
 
 Q22b_Q7_crosstab_combined <- data1 %>%
     tab_cells(Q7_combined) %>%            # rows = AI use frequency
     tab_cols(Q22b) %>%     # columns = combined streams
-    tab_stat_cpct(label = "Percent") %>%
+    tab_stat_rpct(label = "Percent") %>%
     tab_pivot()
 Q22b_Q7_crosstab_combined
 
 Q22c_Q7_crosstab_combined <- data1 %>%
     tab_cells(Q7_combined) %>%            # rows = AI use frequency
     tab_cols(Q22c) %>%     # columns = combined streams
-    tab_stat_cpct(label = "Percent") %>%
+    tab_stat_rpct(label = "Percent") %>%
     tab_pivot()
 Q22c_Q7_crosstab_combined
 
 Q22d_Q7_crosstab_combined <- data1 %>%
     tab_cells(Q7_combined) %>%            # rows = AI use frequency
     tab_cols(Q22d) %>%     # columns = combined streams
-    tab_stat_cpct(label = "Percent") %>%
+    tab_stat_rpct(label = "Percent") %>%
     tab_pivot()
 Q22d_Q7_crosstab_combined
