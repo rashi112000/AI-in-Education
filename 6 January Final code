@@ -205,6 +205,26 @@ Q7_Q27e_crosstab_combined <- data1 %>%
     tab_pivot()
 Q7_Q27e_crosstab_combined
 
+# ============================================================
+# CROSS TAB: Q7 × Q30
+# ============================================================
+
+data1 <- data %>%
+    mutate(
+        Q7_combined = case_when(
+            Q7 %in% c("Humanities/Arts with Mathematics",
+                      "Humanities/Arts without Mathematics") ~ "Humanities / Arts",
+            TRUE ~ Q7
+        )
+    )
+
+Q7_Q30_crosstab_combined <- data1 %>%
+    tab_cells(Q7) %>%            # rows = AI use frequency
+    tab_cols(Q30) %>%     # columns = combined streams
+    tab_stat_rpct(label = "Percent") %>%
+    tab_pivot()
+Q7_Q30_crosstab_combined
+
 
 # ============================================================
 # Q8
