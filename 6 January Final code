@@ -219,7 +219,7 @@ data1 <- data %>%
     )
 
 Q7_Q30_crosstab_combined <- data1 %>%
-    tab_cells(Q7) %>%            # rows = AI use frequency
+    tab_cells(Q7_combined) %>%            # rows = AI use frequency
     tab_cols(Q30) %>%     # columns = combined streams
     tab_stat_rpct(label = "Percent") %>%
     tab_pivot()
