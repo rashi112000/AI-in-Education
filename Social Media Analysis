@@ -1,0 +1,56 @@
+# Previous Code as it is 
+
+Q27c <- data %>%
+    tab_cells(Q27c) %>%
+    tab_cols(total()) %>%
+    tab_stat_cases(label = "Count") %>%
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+
+Q27c
+
+Q34_overall <- data %>%
+    tab_cells(Q34a,Q34b,Q34c,Q34d, Q34e, Q34f, Q34g) %>%
+    tab_cols(total()) %>%
+    tab_stat_cases(label = "Count") %>%
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+
+Q34_overall
+
+Q36_overall <- data %>%
+    tab_cells(Q36a,Q36b,Q36c,Q36d,Q36e) %>%
+    tab_cols(total()) %>%
+    tab_stat_cases(label = "Count") %>%
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+
+Q36_overall
+
+Q37 <- data %>%
+    tab_cells(Q37) %>%
+    tab_cols(total()) %>%
+    tab_stat_cases(label = "Count") %>%
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+Q37
+
+Q38_overall <- data %>%
+    tab_cells(Q38a,Q38b,Q38c,Q38d,Q38e, Q38f, Q38g, Q38h, Q38i, Q38j) %>%
+    tab_cols(total()) %>%
+    tab_stat_cases(label = "Count") %>%
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+
+Q38_overall
+
+Q39_overall <- data %>%
+    tab_cells(Q39a,Q39b,Q39c,Q39d,Q39e, Q39f, Q39g, Q39h) %>%
+    tab_cols(total()) %>%
+    tab_stat_cases(label = "Count") %>%
+    tab_stat_cpct(label = "Percent") %>%
+    tab_pivot()
+
+Q39_overall
+
+
